@@ -1,11 +1,13 @@
 import { createServer, Model, Response } from "miragejs";
 import { nanoid } from "nanoid";
+import { faker } from "@faker-js/faker";
 
 export function makeServer({ environment = "development" } = {}) {
     return createServer({
         environment,
         models: {
             job: Model,
+            candidate: Model,
         },
 
         seeds(server) {
@@ -233,6 +235,34 @@ export function makeServer({ environment = "development" } = {}) {
                 tags: ["Leadership", "System Design"],
                 order: 25,
             });
+
+            const jobs = server.schema.jobs.all().models;
+
+            for (let i = 0; i < 1000; i++) {
+                let randomJob = faker.helpers.arrayElement(jobs);
+                const stage = faker.helpers.arrayElement([
+                    "applied",
+                    "screening",
+                    "tech",
+                    "offer",
+                    "hired",
+                    "rejected",
+                ]);
+
+                server.create("candidate", {
+                    id: faker.string.uuid(),
+                    name: faker.person.fullName(),
+                    email: faker.internet.email().toLowerCase(),
+                    stage: stage,
+                    jobId: randomJob.id,
+                    timeline: [
+                        {
+                            stage,
+                            date: new Date().toISOString(),
+                        },
+                    ],
+                });
+            }
         },
 
 
@@ -284,7 +314,7 @@ export function makeServer({ environment = "development" } = {}) {
                 }
 
                 const page = parseInt(request.queryParams.page || 1, 10);
-                const pageSize = parseInt(request.queryParams.pageSize || 10, 10);
+                const pageSize = parseInt(request.queryParams.pageSize || jobs.length, 10);
                 const start = (page - 1) * pageSize;
                 const paginated = jobs.slice(start, start + pageSize);
 
@@ -299,9 +329,9 @@ export function makeServer({ environment = "development" } = {}) {
 
             this.post("/jobs", (schema, request) => {
                 const attrs = JSON.parse(request.requestBody);
-                const id = nanoid();
-                const slug=attrs.title.toLowerCase().trim().replace(/[^\w\s-]/g,"").replace(/\s+/g,"-"); 
-                return schema.jobs.create({ ...attrs,id,slug });
+                const id = faker.string.uuid();
+                const slug = attrs.title.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
+                return schema.jobs.create({ ...attrs, id, slug });
             });
 
 
@@ -320,6 +350,43 @@ export function makeServer({ environment = "development" } = {}) {
                 const job = schema.jobs.find(request.params.id);
                 return job.update({ order: toOrder });
             });
+
+            this.get("/candidates", (schema, request) => {
+                let candidates = schema.candidates.all().models;
+                console.log(candidates)
+                const stage = request.queryParams.stage
+                if (stage) {
+                    candidates = candidates.filter((candidate) => candidate.stage === stage)
+                }
+                return { candidates, total: candidates.length };
+            });
+
+            this.post("/candidates", (schema, request) => {
+                const attrs = JSON.parse(request.requestBody);
+                const id = faker.string.uuid();;
+                const timeline = [{ stage: attrs.stage, date: new Date().toISOString() }];
+                return schema.candidates.create({ ...attrs, id, timeline });
+            });
+
+            this.patch("/candidates/:id", (schema, request) => {
+                const id = request.params.id;
+                const attrs = JSON.parse(request.requestBody);
+                const candidate = schema.candidates.find(id);
+                if (attrs.stage) {
+                    candidate.update({ stage: attrs.stage });
+                    const timeline = candidate.timeline || [];
+                    timeline.push({ stage: attrs.stage, date: new Date().toISOString() });
+                    candidate.update({ timeline });
+                }
+                return candidate;
+            });
+
+            this.get("/candidates/:id/timeline", (schema, request) => {
+                const id = request.params.id;
+                const candidate = schema.candidates.find(id);
+                return candidate.timeline || [];
+            });
+
         },
     });
 }
