@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import CreateJobModal from "../modals/CreateJobModal";
 import EditJobModal from "../modals/EditJobModal";
+import { Link } from "react-router-dom";
 
 
 export default function Home() {
@@ -43,18 +44,18 @@ export default function Home() {
         });
         res = await res.json();
         console.log(res);
-        setJobs((prev) =>{
-            let arr= prev.map((job) => job.id === id ? { ...job, status: body.status } : job)
-            if(status===''){
+        setJobs((prev) => {
+            let arr = prev.map((job) => job.id === id ? { ...job, status: body.status } : job)
+            if (status === '') {
                 return arr;
             }
-            return arr.filter((job)=>job.status===status);
+            return arr.filter((job) => job.status === status);
 
-    });
+        });
     }
 
     const fetchJobs = async () => {
-        let response = await fetch(`/api/jobs?search=${search}&status=${status}&page=${page}&pageSize${pageSize}=&sort=${sort}&tags=${tags.join(",")}`);
+        let response = await fetch(`/api/jobs?search=${search}&status=${status}&page=${page}&pageSize=${pageSize}&sort=${sort}&tags=${tags.join(",")}`);
         response = await response.json();
         setJobs(response.jobs);
         setTotalJobs(response.total);
@@ -65,31 +66,34 @@ export default function Home() {
         fetchJobs();
     }, [search, status, page, sort, tags]);
 
+    
+
     return (
         <div>
             {showCreateModal && (
-                <CreateJobModal closeModal={() => setShowCreateModal(false)} />
+                <CreateJobModal closeModal={() => {setShowCreateModal(false),fetchJobs()}} />
             )}
             {editJob && (
-                <EditJobModal job={editJob} closeModal={() => { setEditJob() }} />
+                <EditJobModal job={editJob} closeModal={() => {{setEditJob(),fetchJobs()}}} />
             )}
             <h1>Home</h1>
+            <Link to="/candidates"><button>view candidates</button></Link>
             <button onClick={() => setShowCreateModal(true)}>Add Jobs</button>
-            <br/>
+            <br />
             <input
                 type="text"
                 placeholder="Search jobs"
                 value={search}
-                onChange={(e) => {setSearch(e.target.value);setPage(1)}}
+                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             />
 
-            <select value={status} onChange={(e) =>{ setStatus(e.target.value);setPage(1)}}>
+            <select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}>
                 <option value="">All</option>
                 <option value="active">Active</option>
                 <option value="archived">Archived</option>
             </select>
 
-            <select value={sort} onChange={(e) => {setSort(e.target.value);setPage(1)}}>
+            <select value={sort} onChange={(e) => { setSort(e.target.value); setPage(1) }}>
                 <option value="order_asc">Order ↑</option>
                 <option value="order_desc">Order ↓</option>
                 <option value="name_asc">Name A–Z</option>
@@ -119,7 +123,7 @@ export default function Home() {
 
             {jobs.map((job) => (
                 <div key={job.id}>
-                    <h2>{job?.title} | {job?.tags.join(" ")} |
+                    <h2>{job?.title} | {job?.tags?.join(" ")} |
                         <button onClick={() => setEditJob(job)}>Edit</button> |
                         <button onClick={() => handleJobStatus(job.id, job.status)}>{job.status === "active" ? "archive" : "unarchive"}</button>
                     </h2>
