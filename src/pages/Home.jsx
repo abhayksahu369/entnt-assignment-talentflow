@@ -39,6 +39,7 @@ function JobItem({ job, handleJobStatus, setEditJob }) {
                 <button onClick={() => handleJobStatus(job.id, job.status)}>
                     {job.status === "active" ? "archive" : "unarchive"}
                 </button>
+                <Link to={`/job/${job.id}`}><button >vew details</button></Link>
             </div>
 
             <div
@@ -140,12 +141,12 @@ export default function Home() {
 
     const handleShowMore = () => {
         if (pageSize < totalJobs) {
-            setPageSize((prev) => prev + 10); // fetch more jobs
+            setPageSize((prev) => prev + 10);
         }
     };
 
     const handleShowLess = () => {
-        setPageSize(10); // reset to initial size
+        setPageSize(10); 
     };
 
     const fetchJobs = async () => {
