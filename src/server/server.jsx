@@ -8,6 +8,7 @@ export function makeServer({ environment = "development" } = {}) {
         models: {
             job: Model,
             candidate: Model,
+            assessment: Model,
         },
 
         seeds(server) {
@@ -263,6 +264,282 @@ export function makeServer({ environment = "development" } = {}) {
                     ],
                 });
             }
+
+            server.create("assessment", {
+                id: faker.string.uuid(),
+                jobId: "1",
+                title: "Frontend Developer Assessment",
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "HTML & CSS",
+                        questions: [
+                            {
+                                id: "q-1",
+                                text: "Do inline elements accept width and height properties in CSS?",
+                                type: "single-choice",
+                                validation: { required: true },
+                                options: ["Yes", "No"],
+                            },
+                            {
+                                id: "q-2",
+                                text: "Explain why inline elements behave this way in CSS.",
+                                type: "long-text",
+                                validation: { required: true, maxLength: 300 },
+                                condition: { questionId: "q-1", value: "No" },
+                            },
+                            {
+                                id: "q-3",
+                                text: "Which tag is used for creating a hyperlink?",
+                                type: "single-choice",
+                                validation: { required: true },
+                                options: ["<a>", "<link>", "<href>"],
+                            },
+                            {
+                                id: "q-4",
+                                text: "Choose all CSS units",
+                                type: "multi-choice",
+                                validation: { required: false },
+                                options: ["px", "em", "kg", "%"],
+                            },
+                            {
+                                id: "q-5",
+                                text: "Upload a sample HTML file",
+                                type: "file",
+                                validation: { required: false },
+                                options: [],
+                            },
+                        ],
+                    },
+                    {
+                        id: "section-2",
+                        title: "JavaScript Basics",
+                        questions: [
+                            {
+                                id: "q-6",
+                                text: "Is JavaScript single-threaded?",
+                                type: "single-choice",
+                                validation: { required: true },
+                                options: ["Yes", "No"],
+                            },
+                            {
+                                id: "q-7",
+                                text: "If yes, how does it handle asynchronous tasks like setTimeout?",
+                                type: "long-text",
+                                validation: { required: true, maxLength: 400 },
+                                condition: { questionId: "q-6", value: "Yes" },
+                            },
+                            {
+                                id: "q-8",
+                                text: "What is `this` keyword?",
+                                type: "short-text",
+                                validation: { required: true },
+                                options: [],
+                            },
+                            {
+                                id: "q-9",
+                                text: "Explain event delegation",
+                                type: "long-text",
+                                validation: { required: false },
+                                options: [],
+                                condition: { questionId: "q-8", value: "this refers to object" },
+                            },
+                            {
+                                id: "q-10",
+                                text: "Upload a JS file",
+                                type: "file",
+                                validation: { required: false },
+                                options: [],
+                            },
+                        ],
+                    },
+                ],
+            });
+
+            server.create("assessment", {
+                id: faker.string.uuid(),
+                jobId: "2",
+                title: "Backend Developer Assessment",
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "Databases",
+                        questions: [
+                            {
+                                id: "q-1",
+                                text: "What is normalization?",
+                                type: "long-text",
+                                validation: { required: true, maxLength: 300 },
+                                options: [],
+                            },
+                            {
+                                id: "q-2",
+                                text: "Choose SQL aggregate functions",
+                                type: "multi-choice",
+                                validation: { required: true },
+                                options: ["SUM", "COUNT", "AVG", "FILTER"],
+                            },
+                            {
+                                id: "q-3",
+                                text: "Write SQL to fetch top 5 employees",
+                                type: "short-text",
+                                validation: { required: true, maxLength: 100 },
+                                options: [],
+                            },
+                            {
+                                id: "q-4",
+                                text: "What is an index in DB?",
+                                type: "long-text",
+                                validation: { required: false },
+                                options: [],
+                            },
+                            {
+                                id: "q-5",
+                                text: "Upload a schema design",
+                                type: "file",
+                                validation: { required: false },
+                                options: [],
+                            },
+                        ],
+                    },
+                    {
+                        id: "section-2",
+                        title: "Node.js",
+                        questions: [
+                            {
+                                id: "q-6",
+                                text: "What is Event Loop?",
+                                type: "long-text",
+                                validation: { required: true, maxLength: 500 },
+                                options: [],
+                            },
+                            {
+                                id: "q-7",
+                                text: "Which are core Node.js modules?",
+                                type: "multi-choice",
+                                validation: { required: true },
+                                options: ["fs", "http", "lodash", "path"],
+                            },
+                            {
+                                id: "q-8",
+                                text: "Explain middleware in Express.js",
+                                type: "long-text",
+                                validation: { required: false },
+                                options: [],
+                            },
+                            {
+                                id: "q-9",
+                                text: "Upload Express app code",
+                                type: "file",
+                                validation: { required: false },
+                                options: [],
+                            },
+                            {
+                                id: "q-10",
+                                text: "What is difference between require and import?",
+                                type: "short-text",
+                                validation: { required: true },
+                                options: [],
+                            },
+                        ],
+                    },
+                ],
+            });
+
+            server.create("assessment", {
+                id: faker.string.uuid(),
+                jobId: "4",
+                title: "Data Scientist Assessment",
+                sections: [
+                    {
+                        id: "section-1",
+                        title: "Statistics & Machine Learning",
+                        questions: [
+                            {
+                                id: "q-1",
+                                text: "Is correlation the same as causation?",
+                                type: "single-choice",
+                                validation: { required: true },
+                                options: ["Yes", "No"],
+                            },
+                            {
+                                id: "q-2",
+                                text: "Give an example where correlation does not imply causation.",
+                                type: "long-text",
+                                validation: { required: true, maxLength: 400 },
+                                options: [],
+                                condition: { questionId: "q-1", value: "No" },
+                            },
+                            {
+                                id: "q-3",
+                                text: "Which algorithm is best suited for classifying emails as spam or not spam?",
+                                type: "single-choice",
+                                validation: { required: true },
+                                options: ["Linear Regression", "Logistic Regression", "Naive Bayes"],
+                            },
+                            {
+                                id: "q-4",
+                                text: "Choose all supervised learning algorithms:",
+                                type: "multi-choice",
+                                validation: { required: true },
+                                options: ["Decision Trees", "K-Means", "Random Forest", "Linear Regression"],
+                            },
+                            {
+                                id: "q-5",
+                                text: "Upload a confusion matrix plot for a classification model.",
+                                type: "file",
+                                validation: { required: false },
+                                options: [],
+                            },
+                        ],
+                    },
+                    {
+                        id: "section-2",
+                        title: "Python & Data Handling",
+                        questions: [
+                            {
+                                id: "q-6",
+                                text: "What library is commonly used for data manipulation in Python?",
+                                type: "single-choice",
+                                validation: { required: true },
+                                options: ["NumPy", "Pandas", "Matplotlib"],
+                            },
+                            {
+                                id: "q-7",
+                                text: "Upload a Jupyter Notebook with exploratory data analysis on a dataset of your choice.",
+                                type: "file",
+                                validation: { required: false },
+                                options: [],
+                            },
+                            {
+                                id: "q-8",
+                                text: "Which function is used in Pandas to check for missing values?",
+                                type: "short-text",
+                                validation: { required: true },
+                                options: [],
+                            },
+                            {
+                                id: "q-9",
+                                text: "Is feature scaling always required for decision trees?",
+                                type: "single-choice",
+                                validation: { required: true },
+                                options: ["Yes", "No"],
+                            },
+                            {
+                                id: "q-10",
+                                text: "If not, explain why feature scaling is unnecessary for decision trees.",
+                                type: "long-text",
+                                validation: { required: true, maxLength: 300 },
+                                options: [],
+                                condition: { questionId: "q-9", value: "No" },
+                            },
+                        ],
+                    },
+                ],
+            });
+
+
+
         },
 
 
@@ -323,17 +600,19 @@ export function makeServer({ environment = "development" } = {}) {
 
 
             this.get("/jobs/:id", (schema, request) => {
-                return schema.jobs.find(request.params.id);
+                const job = schema.jobs.find(request.params.id);
+                const candidates = schema.candidates.where({ jobId: request.params.id })
+                return { job, candidates: candidates.models }
             });
 
 
             this.post("/jobs", (schema, request) => {
                 let jobs = schema.jobs.all().models;
                 const attrs = JSON.parse(request.requestBody);
-                const order=jobs.length+1;
+                const order = jobs.length + 1;
                 const id = faker.string.uuid();
                 const slug = attrs.title.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
-                return schema.jobs.create({ ...attrs, id, slug,order });
+                return schema.jobs.create({ ...attrs, id, slug, order });
             });
 
 
@@ -387,6 +666,53 @@ export function makeServer({ environment = "development" } = {}) {
                 const id = request.params.id;
                 const candidate = schema.candidates.find(id);
                 return candidate.timeline || [];
+            });
+
+            this.get("/assessments/:jobId", (schema, request) => {
+                let jobId = request.params.jobId;
+                return schema.assessments.findBy({ jobId });
+            });
+
+            this.post("/assessments", (schema, request) => {
+                let attrs = JSON.parse(request.requestBody);
+
+                return schema.assessments.create({
+                    id: faker.string.uuid(),
+                    ...attrs,
+                });
+            });
+
+
+            this.put("/assessments/:jobId", (schema, request) => {
+                let jobId = request.params.jobId;
+                let attrs = JSON.parse(request.requestBody);
+
+                let assessment = schema.assessments.findBy({ jobId });
+                if (assessment) {
+                    return assessment.update(attrs);
+                } else {
+                    return schema.assessments.create({ jobId, ...attrs });
+                }
+            });
+
+
+            this.post("/assessments/:jobId/submit", (schema, request) => {
+                let { jobId, candidateId, responses } = JSON.parse(request.requestBody);
+                let key = `responses-${jobId}`;
+                let existing = JSON.parse(localStorage.getItem(key) || "[]");
+
+                existing.push({
+                    candidateId,
+                    responses,
+                    timestamp: new Date().toISOString(),
+                });
+
+                localStorage.setItem(key, JSON.stringify(existing));
+
+                return {
+                    success: true,
+                    message: "responses saved locally",
+                };
             });
 
         },
