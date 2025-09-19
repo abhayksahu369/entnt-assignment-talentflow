@@ -2,6 +2,55 @@ import { useEffect, useState } from "react"
 import CreateJobModal from "../modals/CreateJobModal";
 import EditJobModal from "../modals/EditJobModal";
 import { Link } from "react-router-dom";
+import {
+    DndContext,
+    closestCenter,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+
+function JobItem({ job, handleJobStatus, setEditJob }) {
+    const { attributes, listeners, setNodeRef, transform, transition } =
+        useSortable({ id: job.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        padding: "8px",
+        margin: "4px 0",
+        background: "#f2f2f2",
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+    };
+
+    return (
+        <div ref={setNodeRef} style={style}>
+            <div>
+                <h2>
+                    {job?.title} | {job?.tags?.join(" ")}
+                </h2>
+                <button onClick={() => setEditJob(job)}>Edit</button>
+                <button onClick={() => handleJobStatus(job.id, job.status)}>
+                    {job.status === "active" ? "archive" : "unarchive"}
+                </button>
+            </div>
+
+            <div
+                {...attributes}
+                {...listeners}
+                style={{ cursor: "grab", padding: "0 8px" }}
+            >
+                ⠿
+            </div>
+        </div>
+    );
+}
 
 
 export default function Home() {
@@ -9,13 +58,47 @@ export default function Home() {
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("active");
     const [page, setPage] = useState(1);
-    const [pageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(10);
     const [sort, setSort] = useState("order_asc");
     const [totalJobs, setTotalJobs] = useState(0);
     const [tags, setTags] = useState([]);
     const [tagInput, setTagInput] = useState("");
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editJob, setEditJob] = useState();
+
+
+    const handleDragEnd = async ({ active, over }) => {
+        if (!over || active.id === over.id) return;
+
+
+        const prevJobs = jobs;
+
+        const oldIndex = jobs.findIndex((j) => j.id === active.id);
+        const newIndex = jobs.findIndex((j) => j.id === over.id);
+
+        const newJobs = arrayMove(jobs, oldIndex, newIndex).map((job, idx) => ({
+            ...job,
+            order: idx + 1,
+        }));
+
+        setJobs(newJobs);
+
+        try {
+            let res = await fetch(`/api/jobs/${active.id}/reorder`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ fromOrder: oldIndex + 1, toOrder: newIndex + 1 }),
+            });
+            res = await res.json();
+            console.log(res)
+            if (res.job) console.log(res)
+            else if (!res.ok) throw new Error("errorrrr");
+
+        } catch (err) {
+            console.error("Rollback needed", err);
+            setJobs(prevJobs);
+        }
+    }
 
     const handleAddTag = () => {
         const tag = tagInput;
@@ -32,6 +115,7 @@ export default function Home() {
         setTags((prev) => prev.filter((t) => t !== tag));
         setPage(1);
     };
+
 
     const handleJobStatus = async (id, stat) => {
         const body = {
@@ -54,6 +138,16 @@ export default function Home() {
         });
     }
 
+    const handleShowMore = () => {
+        if (pageSize < totalJobs) {
+            setPageSize((prev) => prev + 10); // fetch more jobs
+        }
+    };
+
+    const handleShowLess = () => {
+        setPageSize(10); // reset to initial size
+    };
+
     const fetchJobs = async () => {
         let response = await fetch(`/api/jobs?search=${search}&status=${status}&page=${page}&pageSize=${pageSize}&sort=${sort}&tags=${tags.join(",")}`);
         response = await response.json();
@@ -64,17 +158,17 @@ export default function Home() {
 
     useEffect(() => {
         fetchJobs();
-    }, [search, status, page, sort, tags]);
+    }, [search, status, page, sort, tags,pageSize]);
 
-    
+
 
     return (
         <div>
             {showCreateModal && (
-                <CreateJobModal closeModal={() => {setShowCreateModal(false),fetchJobs()}} />
+                <CreateJobModal closeModal={() => { setShowCreateModal(false), fetchJobs() }} totalJobs={totalJobs} />
             )}
             {editJob && (
-                <EditJobModal job={editJob} closeModal={() => {{setEditJob(),fetchJobs()}}} />
+                <EditJobModal job={editJob} closeModal={() => { { setEditJob(), fetchJobs() } }} />
             )}
             <h1>Home</h1>
             <Link to="/candidates"><button>view candidates</button></Link>
@@ -121,23 +215,22 @@ export default function Home() {
                 </div>
             </div>
 
-            {jobs.map((job) => (
-                <div key={job.id}>
-                    <h2>{job?.title} | {job?.tags?.join(" ")} |
-                        <button onClick={() => setEditJob(job)}>Edit</button> |
-                        <button onClick={() => handleJobStatus(job.id, job.status)}>{job.status === "active" ? "archive" : "unarchive"}</button>
-                    </h2>
-                </div>
-            ))}
+            <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext
+                    items={jobs.map((job) => job.id)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    {jobs.map((job) => (
+                        <JobItem key={job.id} job={job} handleJobStatus={handleJobStatus} setEditJob={setEditJob} />
+                    ))}
+                </SortableContext>
+            </DndContext>
 
-            <button onClick={() => setPage((prev) => prev - 1)} hidden={page === 1}>
-                Prev
+            <button onClick={handleShowMore} disabled={pageSize >= totalJobs}>
+                Show More
             </button>
-            <span>
-                {page}
-            </span>
-            <button onClick={() => setPage((prev) => (prev < Math.ceil(totalJobs / pageSize) ? prev + 1 : prev))} hidden={page >= Math.ceil(totalJobs / pageSize)} >
-                Next
+            <button onClick={handleShowLess} disabled={pageSize <= 10}>
+                Show Less
             </button>
 
         </div>
