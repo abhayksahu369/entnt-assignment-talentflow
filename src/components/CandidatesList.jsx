@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { Link } from "react-router-dom";
 
 
 
@@ -29,6 +30,7 @@ export default function CandidatesList({candidates}) {
                                 }}
                             >
                                 {candidate.name} | {candidate.email} | {candidate.stage}
+                                {" "}<Link to={`/candidate/${candidate.id}`}><button>view details</button></Link>
                             </div>
                         );
                     })}
