@@ -242,7 +242,7 @@ export function makeServer({ environment = "development" } = {}) {
                 let randomJob = faker.helpers.arrayElement(jobs);
                 const stage = faker.helpers.arrayElement([
                     "applied",
-                    "screening",
+                    "screen",
                     "tech",
                     "offer",
                     "hired",
@@ -328,10 +328,12 @@ export function makeServer({ environment = "development" } = {}) {
 
 
             this.post("/jobs", (schema, request) => {
+                let jobs = schema.jobs.all().models;
                 const attrs = JSON.parse(request.requestBody);
+                const order=jobs.length+1;
                 const id = faker.string.uuid();
                 const slug = attrs.title.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
-                return schema.jobs.create({ ...attrs, id, slug });
+                return schema.jobs.create({ ...attrs, id, slug,order });
             });
 
 

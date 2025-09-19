@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import CreateCandidateModal from "../modals/CreateCandidateModal";
+import KanbanBoard from "../components/KanbanBoard";
 
 export default function CandidatesPage() {
     const [allCandidates, setAllCandidates] = useState([]);
@@ -38,7 +39,7 @@ export default function CandidatesPage() {
     return (
         <>
             {showCreateModal && (
-                <CreateCandidateModal closeModal={() => setShowCreateModal(false)} />
+                <CreateCandidateModal closeModal={() => {setShowCreateModal(false),fetchCandidates()}} />
             )}
             <h1>All Candidates</h1>
             <button onClick={() => setShowCreateModal(true)}>Add Candidates</button><br/>
@@ -46,12 +47,13 @@ export default function CandidatesPage() {
             <select value={stage} onChange={(e) => setStage(e.target.value)}>
                 <option value="">All</option>
                 <option value="applied">Applied</option>
-                <option value="screening">Screening</option>
+                <option value="screen">Screen</option>
                 <option value="tech">tech</option>
                 <option value="offer">Offer</option>
                 <option value="hired">Hired</option>
                 <option value="rejected">Rejected</option>
             </select>
+            <KanbanBoard candidates={candidates} setCandidates={setCandidates}/>
             <div ref={parentRef} style={{ height: "100%", overflow: "auto" }}>
                 <div style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
                     {rowVirtualizer.getVirtualItems().map((virtualRow) => {
