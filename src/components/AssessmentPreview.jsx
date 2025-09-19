@@ -60,7 +60,7 @@ export default function AssessmentPreview({ assessmentData }) {
     return (
         <form onSubmit={handleSubmit} className="p-4 border mt-4 rounded bg-gray-50">
             <h2 className="text-lg font-bold mb-3">Preview</h2>
-            {assessmentData.map((section) => (
+            {assessmentData?.map((section) => (
                 <div key={section.id} className="mb-4">
                     <h3 className="font-semibold mb-2">{section.title}</h3>
 
