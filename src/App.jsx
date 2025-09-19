@@ -2,7 +2,12 @@ import { BrowserRouter, Routes,Route } from 'react-router-dom';
 import './App.css'
 import Home from './pages/Home.jsx';
 import CandidatesPage from './pages/CandidatesPage.jsx';
-import AssessmentBuilder from './pages/AssesmentBuilder.jsx';
+import TestPage from './pages/TestPage.jsx';
+import TestPage2 from './pages/TestPage2.jsx'
+import AssessmentBuilder from './pages/AssesmentBuilderPage.jsx';
+import JobDetails from './pages/JobDetails.jsx';
+import AssessmentPreview from './components/AssessmentPreview.jsx';
+import AssessmentPreviewPage from './pages/AssessmentPreviewPage.jsx';
 
 
 function App() {
@@ -12,8 +17,10 @@ function App() {
       <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home/>}/>;
+        <Route path='/job/:id' element={<JobDetails/>}/>;
         <Route path='/candidates' element={<CandidatesPage/>}/>
-        <Route path='/assessment' element={<AssessmentBuilder/>}/>
+        <Route path='/assessmentbuilder/:jobId' element={<AssessmentBuilder/>}/>
+        <Route path='/assessmentpreview/:jobId' element={<AssessmentPreviewPage/>}/>
       </Routes>
       </BrowserRouter>
     </>
