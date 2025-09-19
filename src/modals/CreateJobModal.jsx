@@ -1,12 +1,11 @@
 import { useState } from "react"
 
 
-export default function CreateJobModal({closeModal}) {
+export default function CreateJobModal({ closeModal,totalJobs }) {
     const [jobData, setJobData] = useState({
         title: "",
         status: "active",
         tags: [],
-        order:Date.now()
     })
     const [tag, setTag] = useState("");
 
@@ -29,14 +28,10 @@ export default function CreateJobModal({closeModal}) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(jobData),
         });
-        res=await res.json();
-        setJobData({
-        title: "",
-        status: "active",
-        tags: [],
-        order:Date.now()
-    })
-        
+        res = await res.json();
+        console.log("job added successfully",res);
+        closeModal();
+
     }
     return (
         <div>

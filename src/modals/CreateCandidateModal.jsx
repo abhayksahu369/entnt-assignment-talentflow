@@ -31,6 +31,7 @@ export default function CreateCandidateModal({ closeModal }) {
       body: JSON.stringify(candidateData),
     });
     res = await res.json();
+    console.log(res)
     console.log("candidate added successfully");
 
     setCandidateData({
@@ -39,6 +40,7 @@ export default function CreateCandidateModal({ closeModal }) {
       stage: "applied",
       jobId: allJobs?.[0]?.id || "",
     });
+    closeModal()
   };
 
   return (

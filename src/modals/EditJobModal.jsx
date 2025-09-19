@@ -30,7 +30,9 @@ export default function EditJobModal({job,closeModal}) {
             body: JSON.stringify(jobData),
         });
         res=await res.json();
-        alert("job edited")
+        console.log("job updated")
+        closeModal();
+
         
     }
     return (
