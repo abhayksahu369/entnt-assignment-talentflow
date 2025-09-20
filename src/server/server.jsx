@@ -2,6 +2,8 @@ import { createServer, Model, Response } from "miragejs";
 import { nanoid } from "nanoid";
 import { faker } from "@faker-js/faker";
 
+faker.seed(123);
+
 export function makeServer({ environment = "development" } = {}) {
     return createServer({
         environment,
@@ -665,7 +667,8 @@ export function makeServer({ environment = "development" } = {}) {
             this.get("/candidates/:id/timeline", (schema, request) => {
                 const id = request.params.id;
                 const candidate = schema.candidates.find(id);
-                return candidate.timeline || [];
+                console.log(candidate);
+                return candidate;
             });
 
             this.get("/assessments/:jobId", (schema, request) => {
