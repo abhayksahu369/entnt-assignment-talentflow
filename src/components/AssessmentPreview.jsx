@@ -1,7 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function AssessmentPreview({ assessmentData }) {
-    const [answers, setAnswers] = useState({});
+export default function AssessmentPreview({ assessmentData,jobId }) {
+   const [answers, setAnswers] = useState(() => {
+    const saved = localStorage.getItem(`answers_${jobId}`);
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem(`answers_${jobId}`, JSON.stringify(answers));
+  }, [answers, jobId]);
 
     const handleChange = (qId, value) => {
         setAnswers((prev) => ({ ...prev, [qId]: value }));
@@ -48,7 +55,9 @@ export default function AssessmentPreview({ assessmentData }) {
         if (errors.length > 0) {
             alert("Errors:\n" + errors.join("\n"));
         } else {
-            alert("Form submitted:\n" + JSON.stringify(answers, null, 2));
+            alert("Form submitted");
+            localStorage.removeItem(`answers_${jobId}`);
+            setAnswers({})
         }
     };
 

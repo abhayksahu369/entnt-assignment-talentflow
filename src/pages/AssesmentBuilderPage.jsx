@@ -1,21 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { faker } from "@faker-js/faker";
 import AssessmentPreview from "../components/AssessmentPreview";
 import { useParams } from "react-router-dom";
 
 
 export default function AssessmentBuilder() {
-    const [sections, setSections] = useState([]);
-    const [assessmentTitle, setAssessmentTitle] = useState("");
-    const{jobId} = useParams();
+    const { jobId } = useParams();
+    const [sections, setSections] = useState(() => {
+        const saved = localStorage.getItem(`${jobId}_assessment_sections`);
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    const [assessmentTitle, setAssessmentTitle] = useState(() => {
+        const saved = localStorage.getItem(`${jobId}_assessment_title`);
+        return saved || "";
+    });
     console.log(sections);
-    
-    const handleCreateAssessment = async() => {
+
+    useEffect(() => {
+        localStorage.setItem(`${jobId}_assessment_sections`, JSON.stringify(sections));
+    }, [sections]);
+
+
+    useEffect(() => {
+        localStorage.setItem(`${jobId}_assessment_title`, assessmentTitle);
+    }, [assessmentTitle]);
+
+    const handleCreateAssessment = async () => {
         if (!assessmentTitle.trim()) {
             alert("Please enter an assessment title");
             return;
         }
-        
+
         let res = await fetch("/api/assessments", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -27,6 +43,10 @@ export default function AssessmentBuilder() {
         });
         res = await res.json();
         console.log(res);
+        localStorage.removeItem(`${jobId}_assessment_sections`);
+        localStorage.removeItem(`${jobId}_assessment_title`);
+        setAssessmentTitle("")
+        setSections([])
         alert("assessment created successfully");
     }
 
@@ -65,7 +85,7 @@ export default function AssessmentBuilder() {
         );
     };
 
-   
+
     const updateSectionTitle = (sectionId, value) => {
         setSections((prev) =>
             prev.map((s) =>
@@ -180,7 +200,7 @@ export default function AssessmentBuilder() {
                             <div className="ml-6">
                                 <button
                                     className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
-                                    onClick={() => {handleCreateAssessment()}}
+                                    onClick={() => { handleCreateAssessment() }}
                                 >
                                     <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -221,7 +241,7 @@ export default function AssessmentBuilder() {
                                             </button>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="p-6">
                                         <div className="space-y-4">
                                             {section.questions.map((q) => (
@@ -415,7 +435,7 @@ export default function AssessmentBuilder() {
                                                 </div>
                                             ))}
                                         </div>
-                                        
+
                                         <div className="mt-6 pt-4 border-t border-gray-200">
                                             <button
                                                 className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
@@ -431,7 +451,7 @@ export default function AssessmentBuilder() {
                                 </div>
                             ))}
                         </div>
-                        
+
                         <div className="mt-8 pt-6 border-t border-gray-200">
                             <button
                                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"

@@ -50,7 +50,7 @@ export default function AssessmentPreviewPage() {
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 {assessment ? (
-                    <AssessmentPreview assessmentData={assessment?.sections} />
+                    <AssessmentPreview assessmentData={assessment?.sections} jobId={jobId} />
                 ) : (
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
                         <div className="text-center py-12">
