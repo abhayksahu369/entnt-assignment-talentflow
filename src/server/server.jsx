@@ -241,6 +241,52 @@ export function makeServer({ environment = "development" } = {}) {
 
             const jobs = server.schema.jobs.all().models;
 
+            server.create("candidate", {
+                id: "1",
+                name: "Amit Sharma",
+                email: "amit.sharma@example.com",
+                stage: "hired",
+                jobId: 1,
+                timeline: [
+                    { stage: "applied", date: "2025-09-01T09:00:00.000Z" },
+                    { stage: "screen", date: "2025-09-02T09:00:00.000Z" },
+                    { stage: "tech", date: "2025-09-03T09:00:00.000Z" },
+                    { stage: "offer", date: "2025-09-04T09:00:00.000Z" },
+                    { stage: "hired", date: "2025-09-05T09:00:00.000Z" },
+                ],
+            });
+
+            server.create("candidate", {
+                id: "2",
+                name: "Priya Reddy",
+                email: "priya.reddy@example.com",
+                stage: "rejected",
+                jobId: 1,
+                timeline: [
+                    { stage: "applied", date: "2025-09-01T10:00:00.000Z" },
+                    { stage: "screen", date: "2025-09-02T10:00:00.000Z" },
+                    { stage: "tech", date: "2025-09-03T10:00:00.000Z" },
+                    { stage: "offer", date: "2025-09-04T10:00:00.000Z" },
+                    { stage: "rejected", date: "2025-09-05T10:00:00.000Z" },
+                ],
+            });
+
+            server.create("candidate", {
+                id: "3",
+                name: "Rohit Verma",
+                email: "rohit.verma@example.com",
+                stage: "hired",
+                jobId: 1,
+                timeline: [
+                    { stage: "applied", date: "2025-09-01T11:00:00.000Z" },
+                    { stage: "screen", date: "2025-09-02T11:00:00.000Z" },
+                    { stage: "tech", date: "2025-09-03T11:00:00.000Z" },
+                    { stage: "offer", date: "2025-09-04T11:00:00.000Z" },
+                    { stage: "hired", date: "2025-09-05T11:00:00.000Z" },
+                ],
+            });
+
+
             for (let i = 0; i < 1000; i++) {
                 let randomJob = faker.helpers.arrayElement(jobs);
                 const stage = faker.helpers.arrayElement([
@@ -251,6 +297,7 @@ export function makeServer({ environment = "development" } = {}) {
                     "hired",
                     "rejected",
                 ]);
+
 
                 server.create("candidate", {
                     id: faker.string.uuid(),
@@ -692,7 +739,7 @@ export function makeServer({ environment = "development" } = {}) {
                 if (stage) {
                     candidates = candidates.filter((candidate) => candidate.stage === stage)
                 }
-                const jobId=request.queryParams.jobId
+                const jobId = request.queryParams.jobId
                 console.log(jobId)
                 if (jobId) {
                     candidates = candidates.filter((candidate) => candidate.jobId === jobId)
@@ -738,6 +785,17 @@ export function makeServer({ environment = "development" } = {}) {
                 console.log(candidate);
                 return candidate;
             });
+
+            this.get("/assessments", (schema, request) => {
+                // Inject error 5–10% of the time
+                if (Math.random() < 0.05) {
+                    return new Response(500, {}, { error: "Server error" });
+                }
+                let assessments = schema.assessments.all().models;
+                return { assessments, total: assessments.length };
+            });
+
+
 
             this.get("/assessments/:jobId", (schema, request) => {
                 // Inject error 5–10% of the time
