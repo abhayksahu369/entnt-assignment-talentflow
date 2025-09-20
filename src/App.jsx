@@ -9,6 +9,8 @@ import CandidateDetails from './pages/CandidateDetails.jsx';
 import Navbar from './components/Navbar.jsx';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import AllAssessmentPage from './pages/AllAssessmentPage.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 
 
 function App() {
@@ -31,9 +33,11 @@ function App() {
           />
           <Routes>
             <Route path='/' element={<Home />} />
+            <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/job/:id' element={<JobDetails />} />
             <Route path='/candidates' element={<CandidatesPage />} />
             <Route path='/candidate/:id' element={<CandidateDetails />} />
+            <Route path='/allassessments' element={<AllAssessmentPage />} />
             <Route path='/assessmentbuilder/:jobId' element={<AssessmentBuilder />} />
             <Route path='/assessmentpreview/:jobId' element={<AssessmentPreviewPage />} />
           </Routes>
