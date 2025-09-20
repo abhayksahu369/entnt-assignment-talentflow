@@ -18,10 +18,20 @@ export default function AssessmentPreviewPage() {
         if (jobId) fetchAssessment();
     }, [jobId]);
 
+    if (!assessment) {
+        return <h1>Loading...</h1>;
+    }
+
     return (
         <>
-            <h1>{assessment.title}</h1>
-            <AssessmentPreview assessmentData={assessment?.sections} />;
+            <h1>{assessment?.title}</h1>
+            {assessment ?
+                <AssessmentPreview assessmentData={assessment?.sections} /> :
+                (
+                    <h1> No assessment created for this job</h1>
+                )
+            }
+
         </>
     )
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom"
 import CandidatesView from "../components/CandidatesView";
-import AssessmentPreview from "../components/AssessmentPreview";
+
 
 
 export default function JobDetails() {
@@ -13,8 +13,9 @@ export default function JobDetails() {
     useEffect(() => {
         if (id) {
             fetchJob();
+            fetchAssessment();
         }
-        fetchAssessment();
+
 
     }, [id])
 
@@ -50,21 +51,3 @@ export default function JobDetails() {
         </div>
     )
 }
-// id
-// :
-// "2"
-// order
-// :
-// 2
-// slug
-// :
-// "backend-engineer"
-// status
-// :
-// "active"
-// tags
-// :
-// (2) ['Node.js', 'API']
-// title
-// :
-// "Backend Engineer"
