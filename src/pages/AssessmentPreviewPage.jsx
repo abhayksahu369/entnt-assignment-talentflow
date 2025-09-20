@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import AssessmentPreview from "../components/AssessmentPreview";
+import { toast } from "react-toastify";
 
 
 export default function AssessmentPreviewPage() {
@@ -16,6 +17,7 @@ export default function AssessmentPreviewPage() {
             setAssessment(res.assessment);
         } catch (error) {
             console.error("Error fetching assessment:", error);
+            toast.error("Error fetching assessment:")
             setAssessment(null);
         } finally {
             setLoading(false);

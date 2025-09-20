@@ -8,7 +8,7 @@ export default function JobDetails() {
     const { id } = useParams()
     const [job, setJob] = useState({});
     const [candidates, setCandidates] = useState([])
-    const [assessment,setAssessment]=useState([])
+    const [assessment, setAssessment] = useState([])
 
     useEffect(() => {
         if (id) {
@@ -19,20 +19,34 @@ export default function JobDetails() {
 
     }, [id])
 
-    const fetchAssessment=async()=>{
-        let res = await fetch(`/api/assessments/${id}`);
-        res = await res.json()
-        console.log(res)
-        setAssessment(res.assessment)
-    }
-    const fetchJob = async () => {
-        let res = await fetch(`/api/jobs/${id}`);
-        res = await res.json()
-        console.log(res)
-        setJob(res.job)
-        setCandidates(res.candidates)
+    const fetchAssessment = async () => {
+        try {
+            let res = await fetch(`/api/assessments/${id}`);
+            if (!res.ok) throw new Error(`Server responded with status ${res.status}`);
 
-    }
+            const data = await res.json();
+            console.log(data);
+            setAssessment(data.assessment);
+        } catch (error) {
+            console.error("Failed to fetch assessment:", error);
+            toast.error("Failed to fetch assessment. Please try again.");
+        }
+    };
+
+    const fetchJob = async () => {
+        try {
+            let res = await fetch(`/api/jobs/${id}`);
+            if (!res.ok) throw new Error(`Server responded with status ${res.status}`);
+
+            const data = await res.json();
+            console.log(data);
+            setJob(data.job);
+            setCandidates(data.candidates);
+        } catch (error) {
+            console.error("Failed to fetch job:", error);
+            toast.error("Failed to fetch job. Please try again.");
+        }
+    };
 
 
 
@@ -45,11 +59,10 @@ export default function JobDetails() {
                             <div>
                                 <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
                                 <div className="mt-2 flex items-center space-x-4">
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                        job.status === 'active' 
-                                            ? 'bg-green-100 text-green-800' 
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${job.status === 'active'
+                                            ? 'bg-green-100 text-green-800'
                                             : 'bg-gray-100 text-gray-800'
-                                    }`}>
+                                        }`}>
                                         {job.status}
                                     </span>
                                 </div>
@@ -67,7 +80,7 @@ export default function JobDetails() {
                                 </Link>
                             </div>
                         </div>
-                        
+
                         {job?.tags && job.tags.length > 0 && (
                             <div className="mt-4">
                                 <h3 className="text-sm font-medium text-gray-700 mb-2">Tags</h3>
@@ -95,7 +108,7 @@ export default function JobDetails() {
                         </p>
                     </div>
                     <div className="p-6">
-                        <CandidatesView allCandidates={candidates}/>
+                        <CandidatesView allCandidates={candidates} />
                     </div>
                 </div>
             </div>

@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 export default function AssessmentBuilder() {
     const { jobId } = useParams();
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     const [sections, setSections] = useState(() => {
         const saved = localStorage.getItem(`${jobId}_assessment_sections`);
         return saved ? JSON.parse(saved) : [];
@@ -34,23 +34,39 @@ export default function AssessmentBuilder() {
             return;
         }
 
-        let res = await fetch("/api/assessments", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                title: assessmentTitle,
-                sections,
-                jobId
-            }),
-        });
-        res = await res.json();
-        console.log(res);
-        localStorage.removeItem(`${jobId}_assessment_sections`);
-        localStorage.removeItem(`${jobId}_assessment_title`);
-        setAssessmentTitle("")
-        setSections([])
-        toast.success("assessment created successfully");
-        navigate(`/job/${jobId}`)
+        if (sections.length===0) {
+            toast.warn("Please add sections and questions");
+            return;
+        }
+
+        try {
+            let res = await fetch("/api/assessments", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: assessmentTitle,
+                    sections,
+                    jobId,
+                }),
+            });
+
+            if (!res.ok) {
+                throw new Error(`Server responded with status ${res.status}`);
+            }
+
+            const data = await res.json();
+            console.log(data);
+            localStorage.removeItem(`${jobId}_assessment_sections`);
+            localStorage.removeItem(`${jobId}_assessment_title`);
+            setAssessmentTitle("");
+            setSections([]);
+
+            toast.success("Assessment created successfully");
+            navigate(`/job/${jobId}`);
+        } catch (error) {
+            console.error("Failed to create assessment:", error);
+            toast.error("Failed to create assessment. Please try again.");
+        }
     }
 
     const addSection = () => {

@@ -13,10 +13,21 @@ export default function CreateCandidateModal({ closeModal }) {
 
 
   const fetchAllJobs = async () => {
-    let response = await fetch(`/api/jobs?search=&status=&page=&pageSize=&sort=&tags=`);
-    response = await response.json();
-    setAllJobs(response.jobs);
-  }
+    try {
+      let response = await fetch(`/api/jobs?search=&status=&page=&pageSize=&sort=&tags=`);
+
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      setAllJobs(data.jobs);
+    } catch (error) {
+      console.error("Failed to fetch jobs:", error);
+      toast.error("Failed to fetch jobs. Please try again.");
+    }
+  };
+
 
   useEffect(() => {
     fetchAllJobs()

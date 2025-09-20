@@ -22,14 +22,13 @@ function CandidateCard({ candidate }) {
   };
 
   return (
-    <div 
-      ref={setNodeRef} 
-      style={style} 
-      {...attributes} 
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
       {...listeners}
-      className={`bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 mb-3 p-4 cursor-grab ${
-        isDragging ? 'opacity-30 rotate-2 scale-105' : 'hover:scale-102'
-      }`}
+      className={`bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 mb-3 p-4 cursor-grab ${isDragging ? 'opacity-30 rotate-2 scale-105' : 'hover:scale-102'
+        }`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
@@ -141,10 +140,10 @@ function StageColumn({ stage, candidates }) {
   );
 }
 
-export default function KanbanBoard({ candidates, setCandidates,fetchCandidate }) {
+export default function KanbanBoard({ candidates, setCandidates, fetchCandidate }) {
   const stages = ["applied", "screen", "tech", "offer", "hired", "rejected"];
   const [activeId, setActiveId] = useState(null);
-  
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -160,7 +159,7 @@ export default function KanbanBoard({ candidates, setCandidates,fetchCandidate }
   const handleDragEnd = async (event) => {
     const { active, over } = event;
     setActiveId(null);
-    
+
     if (!over) return;
 
     const candidateId = active.id;
@@ -168,21 +167,22 @@ export default function KanbanBoard({ candidates, setCandidates,fetchCandidate }
 
     const activeCandidate = candidates.find(c => c.id === candidateId);
     if (!activeCandidate) return;
-     const candidateName=activeCandidate.name;
+    const candidateName = activeCandidate.name;
     const activeStage = activeCandidate.stage;
-    
+
     const overCandidate = candidates.find(c => c.id === overId);
     const overStage = overCandidate ? overCandidate.stage : overId;
+    const previousCandidates = [...candidates];
 
-    if (activeStage !== overStage) {
-      setCandidates((prev) => {
+    setCandidates((prev) => {
+      if (activeStage !== overStage) {
         const filtered = prev.filter(c => c.id !== candidateId);
-        const overIndex = overCandidate 
+        const overIndex = overCandidate
           ? filtered.findIndex(c => c.id === overId)
           : filtered.filter(c => c.stage === overStage).length;
-        
+
         const updatedCandidate = { ...activeCandidate, stage: overStage };
-        
+
         if (overCandidate) {
           const newArray = [...filtered];
           newArray.splice(overIndex, 0, updatedCandidate);
@@ -190,19 +190,19 @@ export default function KanbanBoard({ candidates, setCandidates,fetchCandidate }
         } else {
           return [...filtered, updatedCandidate];
         }
-      });
-    } else if (candidateId !== overId) {
-      setCandidates((prev) => {
+      } else if (candidateId !== overId) {
         const oldIndex = prev.findIndex(c => c.id === candidateId);
         const newIndex = prev.findIndex(c => c.id === overId);
-        
+
         const newArray = [...prev];
         const [removed] = newArray.splice(oldIndex, 1);
         newArray.splice(newIndex, 0, removed);
-        
+
         return newArray;
-      });
-    }
+      } else {
+        return prev;
+      }
+    });
 
     try {
       const res = await fetch(`/api/candidates/${candidateId}`, {
@@ -210,20 +210,28 @@ export default function KanbanBoard({ candidates, setCandidates,fetchCandidate }
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ stage: overStage }),
       });
+
+      if (!res.ok) {
+        throw new Error(`Server responded with status ${res.status}`);
+      }
+
       const result = await res.json();
       console.log(result);
       toast.info(`${candidateName} progressed to ${overStage} stage.`);
-      fetchCandidate()
+      fetchCandidate();
     } catch (err) {
-      console.error("Failed to update, rollback", err);
+      console.error("Failed to update, rolling back", err);
+      toast.error(`Failed to move ${candidateName}. Changes reverted.`);
+      setCandidates(previousCandidates);
     }
   };
+
 
   const activeCandidate = activeId ? candidates.find(c => c.id === activeId) : null;
 
   return (
-    <DndContext 
-      collisionDetection={closestCenter} 
+    <DndContext
+      collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       sensors={sensors}
@@ -237,7 +245,7 @@ export default function KanbanBoard({ candidates, setCandidates,fetchCandidate }
           />
         ))}
       </div>
-      
+
       <DragOverlay>
         {activeCandidate ? (
           <DragOverlayCard candidate={activeCandidate} />

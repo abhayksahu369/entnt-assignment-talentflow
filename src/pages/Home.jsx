@@ -49,8 +49,8 @@ function JobItem({ job, handleJobStatus, setEditJob }) {
                         <button
                             onClick={() => handleJobStatus(job.id, job.status)}
                             className={`inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${job.status === "active"
-                                    ? "bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
-                                    : "bg-amber-500 hover:bg-amber-600 focus:ring-amber-500"
+                                ? "bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
+                                : "bg-amber-500 hover:bg-amber-600 focus:ring-amber-500"
                                 }`}
                         >
                             {job.status === "active" ? "Archive" : "Unarchive"}
@@ -148,23 +148,37 @@ export default function Home() {
 
     const handleJobStatus = async (id, stat) => {
         const body = {
-            status: stat === "active" ? "archived" : "active"
-        }
-        let res = await fetch(`/api/jobs/${id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-        });
-        res = await res.json();
-        console.log(res);
-        setJobs((prev) => {
-            let arr = prev.map((job) => job.id === id ? { ...job, status: body.status } : job)
-            if (status === '') {
-                return arr;
-            }
-            return arr.filter((job) => job.status === status);
+            status: stat === "active" ? "archived" : "active",
+        };
 
-        });
+        try {
+            let res = await fetch(`/api/jobs/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+
+            if (!res.ok) {
+                throw new Error(`Server responded with status ${res.status}`);
+            }
+
+            const data = await res.json();
+            console.log(data);
+
+            setJobs((prev) => {
+                let arr = prev.map((job) =>
+                    job.id === id ? { ...job, status: body.status } : job
+                );
+
+                if (status === "") return arr;
+                return arr.filter((job) => job.status === status);
+            });
+
+            toast.success(`Job status updated to "${body.status}"`);
+        } catch (error) {
+            console.error("Failed to update job status:", error);
+            toast.error("Failed to update job status. Please try again.");
+        }
     }
 
     const handleShowMore = () => {
@@ -178,10 +192,22 @@ export default function Home() {
     };
 
     const fetchJobs = async () => {
-        let response = await fetch(`/api/jobs?search=${search}&status=${status}&page=${page}&pageSize=${pageSize}&sort=${sort}&tags=${tags.join(",")}`);
-        response = await response.json();
-        setJobs(response.jobs);
-        setTotalJobs(response.total);
+        try {
+            let response = await fetch(
+                `/api/jobs?search=${search}&status=${status}&page=${page}&pageSize=${pageSize}&sort=${sort}&tags=${tags.join(",")}`
+            );
+            console.log(response)
+            if (!response.ok) {
+                throw new Error("Failed to fetch jobs");
+            }
+
+            const data = await response.json();
+            setJobs(data.jobs);
+            setTotalJobs(data.total);
+        } catch (error) {
+            console.error("Error fetching jobs:", error);
+            toast.error("Error fetching jobs. Please try again.");
+        }
     }
 
 

@@ -1,52 +1,65 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import KanbanBoard from "../components/KanbanBoard";
+import { toast } from "react-toastify";
 
 
 
 export default function CandidateDetails() {
-    const[candidate,setCandidate]=useState([]);
-    const [notes, setNotes] = useState([]);
-    const [showNotes,setShowNotes]=useState(false)
-    const{id}=useParams()
-    
-    const fetchCandidate=async()=>{
-        let res = await fetch(`/api/candidates/${id}/timeline`);
-        res = await res.json()
-        console.log(res)
-        setCandidate([res?.candidate])
+  const [candidate, setCandidate] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [showNotes, setShowNotes] = useState(false)
+  const { id } = useParams()
+
+  const fetchCandidate = async () => {
+    try {
+      let res = await fetch(`/api/candidates/${id}/timeline`);
+
+      if (!res.ok) {
+        throw new Error(`Server responded with status ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log(data);
+
+      setCandidate([data?.candidate]);
+    } catch (error) {
+      console.error("Failed to fetch candidate:", error);
+      toast.error("Failed to fetch candidate. Please try again.");
     }
-    
-    const handleStageChange = async (candidateId, newStage) => {
-        try {
-            const res = await fetch(`/api/candidates/${candidateId}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ stage: newStage }),
-            });
-            const result = await res.json();
-            console.log("Stage updated:", result);
-            
-            setCandidate(prev => prev.map(c => 
-                c.id === candidateId 
-                    ? { ...c, stage: newStage }
-                    : c
-            ));
-            
-            fetchCandidate();
-        } catch (err) {
-            console.error("Failed to update stage:", err);
-        }
+  };
+
+  const handleStageChange = async (candidateId, newStage) => {
+    try {
+      const res = await fetch(`/api/candidates/${candidateId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stage: newStage }),
+      });
+      const result = await res.json();
+      console.log("Stage updated:", result);
+
+      setCandidate(prev => prev.map(c =>
+        c.id === candidateId
+          ? { ...c, stage: newStage }
+          : c
+      ));
+
+      fetchCandidate();
+    } catch (err) {
+      console.error("Failed to update stage:", err);
+      toast.error("Failed to update stage:")
     }
-    
-    useEffect(() => {
-            if (id) {
-                fetchCandidate();
-            }
-        }, [id])
+  }
+
+  useEffect(() => {
+    if (id) {
+      fetchCandidate();
+    }
+  }, [id])
 
 
-    
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-sm border-b border-gray-200">
@@ -92,8 +105,8 @@ export default function CandidateDetails() {
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-gray-900">Notes</h2>
                   {!showNotes && (
-                    <button 
-                      onClick={() => {setShowNotes(true)}}
+                    <button
+                      onClick={() => { setShowNotes(true) }}
                       className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                     >
                       Add Note
@@ -280,7 +293,7 @@ function Timeline({ timeline }) {
   );
 }
 
-function Notes({notes,setNotes,setShowNotes}) {
+function Notes({ notes, setNotes, setShowNotes }) {
   const [note, setNote] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [cursor, setCursor] = useState(0);

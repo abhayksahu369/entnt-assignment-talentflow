@@ -1,20 +1,32 @@
 import { useEffect, useState } from "react";
 import CreateCandidateModal from "../modals/CreateCandidateModal";
 import CandidatesList from "../components/CandidatesList";
+import { toast } from "react-toastify";
 
 export default function CandidatesPage() {
     const [allCandidates, setAllCandidates] = useState([]);
-     const [candidates, setCandidates] = useState([]);
+    const [candidates, setCandidates] = useState([]);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [query, setQuery] = useState("");
     const [stage, setStage] = useState("");
 
     const fetchCandidates = async () => {
-        let res = await fetch(`/api/candidates?search=&stage=&page=`);
-        let data = await res.json();
-        console.log(data.candidates);
-        setAllCandidates(data.candidates);
-        setCandidates(data.candidates)
+        try {
+            let res = await fetch(`/api/candidates?search=&stage=&page=`);
+
+            if (!res.ok) {
+                throw new Error(`Server responded with status ${res.status}`);
+            }
+
+            let data = await res.json();
+            console.log(data.candidates);
+
+            setAllCandidates(data.candidates);
+            setCandidates(data.candidates);
+        } catch (error) {
+            console.error("Failed to fetch candidates:", error);
+            toast.error("Failed to fetch candidates. Please try again.");
+        }
     };
     useEffect(() => {
         fetchCandidates();
@@ -48,7 +60,7 @@ export default function CandidatesPage() {
                             <h1 className="text-3xl font-bold text-gray-900">Candidate Management</h1>
                             <p className="mt-1 text-sm text-gray-500">Manage and track candidate applications</p>
                         </div>
-                        <button 
+                        <button
                             onClick={() => setShowCreateModal(true)}
                             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                         >
