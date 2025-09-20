@@ -2,8 +2,6 @@ import { BrowserRouter, Routes,Route } from 'react-router-dom';
 import './App.css'
 import Home from './pages/Home.jsx';
 import CandidatesPage from './pages/CandidatesPage.jsx';
-import TestPage from './pages/TestPage.jsx';
-import TestPage2 from './pages/TestPage2.jsx'
 import AssessmentBuilder from './pages/AssesmentBuilderPage.jsx';
 import JobDetails from './pages/JobDetails.jsx';
 import AssessmentPreviewPage from './pages/AssessmentPreviewPage.jsx';
