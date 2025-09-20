@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { toast } from "react-toastify";
 
 
 export default function CreateJobModal({ closeModal, totalJobs }) {
@@ -24,12 +25,12 @@ export default function CreateJobModal({ closeModal, totalJobs }) {
 
     const handleJobSubmit = async () => {
         if (!jobData.title.trim()) {
-            alert("Job title is required.");
+            toast.warn("Job title is required.");
             return;
         }
 
         if (!jobData.tags || jobData.tags.length === 0) {
-            alert("At least one tag is required.");
+            toast.warn("At least one tag is required.");
             return;
         }
 
@@ -41,10 +42,11 @@ export default function CreateJobModal({ closeModal, totalJobs }) {
             });
             res = await res.json();
             console.log("Job added successfully", res);
+            toast.success("Job added successfully")
             closeModal();
         } catch (err) {
             console.error("Failed to add job", err);
-            alert("Something went wrong while adding the job.");
+            toast.error("Failed to add job")
         }
 
     }

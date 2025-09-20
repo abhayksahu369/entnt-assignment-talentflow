@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { faker } from "@faker-js/faker";
 import AssessmentPreview from "../components/AssessmentPreview";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 export default function AssessmentBuilder() {
     const { jobId } = useParams();
+    const navigate=useNavigate();
     const [sections, setSections] = useState(() => {
         const saved = localStorage.getItem(`${jobId}_assessment_sections`);
         return saved ? JSON.parse(saved) : [];
@@ -28,7 +30,7 @@ export default function AssessmentBuilder() {
 
     const handleCreateAssessment = async () => {
         if (!assessmentTitle.trim()) {
-            alert("Please enter an assessment title");
+            toast.warn("Please enter an assessment title");
             return;
         }
 
@@ -47,7 +49,8 @@ export default function AssessmentBuilder() {
         localStorage.removeItem(`${jobId}_assessment_title`);
         setAssessmentTitle("")
         setSections([])
-        alert("assessment created successfully");
+        toast.success("assessment created successfully");
+        navigate(`/job/${jobId}`)
     }
 
     const addSection = () => {

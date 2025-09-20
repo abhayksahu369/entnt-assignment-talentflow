@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-export default function AssessmentPreview({ assessmentData,jobId }) {
-   const [answers, setAnswers] = useState(() => {
-    const saved = localStorage.getItem(`answers_${jobId}`);
-    return saved ? JSON.parse(saved) : {};
-  });
+export default function AssessmentPreview({ assessmentData, jobId }) {
+    const [answers, setAnswers] = useState(() => {
+        const saved = localStorage.getItem(`answers_${jobId}`);
+        return saved ? JSON.parse(saved) : {};
+    });
 
-  useEffect(() => {
-    localStorage.setItem(`answers_${jobId}`, JSON.stringify(answers));
-  }, [answers, jobId]);
+    useEffect(() => {
+        localStorage.setItem(`answers_${jobId}`, JSON.stringify(answers));
+    }, [answers, jobId]);
 
     const handleChange = (qId, value) => {
         setAnswers((prev) => ({ ...prev, [qId]: value }));
@@ -53,9 +54,15 @@ export default function AssessmentPreview({ assessmentData,jobId }) {
         e.preventDefault();
         const errors = validate();
         if (errors.length > 0) {
-            alert("Errors:\n" + errors.join("\n"));
+            toast.warn(<div>
+                {errors.map((err, i) => (
+                    <div key={i}>{err}</div>
+                ))}
+            </div>, {
+                autoClose: 6000,
+            });
         } else {
-            alert("Form submitted");
+            toast.success("Form submitted");
             localStorage.removeItem(`answers_${jobId}`);
             setAnswers({})
         }

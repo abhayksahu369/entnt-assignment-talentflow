@@ -13,6 +13,7 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { toast } from "react-toastify";
 
 
 function JobItem({ job, handleJobStatus, setEditJob }) {
@@ -39,19 +40,18 @@ function JobItem({ job, handleJobStatus, setEditJob }) {
                         ))}
                     </div>
                     <div className="flex gap-2">
-                        <button 
+                        <button
                             onClick={() => setEditJob(job)}
                             className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                         >
                             Edit
                         </button>
-                        <button 
+                        <button
                             onClick={() => handleJobStatus(job.id, job.status)}
-                            className={`inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
-                                job.status === "active" 
-                                    ? "bg-gray-600 hover:bg-gray-700 focus:ring-gray-500" 
+                            className={`inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${job.status === "active"
+                                    ? "bg-gray-600 hover:bg-gray-700 focus:ring-gray-500"
                                     : "bg-amber-500 hover:bg-amber-600 focus:ring-amber-500"
-                            }`}
+                                }`}
                         >
                             {job.status === "active" ? "Archive" : "Unarchive"}
                         </button>
@@ -69,7 +69,7 @@ function JobItem({ job, handleJobStatus, setEditJob }) {
                     className="cursor-grab p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                 >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                        <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
                     </svg>
                 </div>
             </div>
@@ -116,11 +116,15 @@ export default function Home() {
             });
             res = await res.json();
             console.log(res)
-            if (res.job) console.log(res)
+            if (res.job) {
+                console.log(res)
+                toast.success("Jobs reordered successfully!")
+            }
             else if (!res.ok) throw new Error("errorrrr");
 
         } catch (err) {
             console.error("Rollback needed", err);
+            toast.error("Failed to reorder jobs. Changes have been rolled back.")
             setJobs(prevJobs);
         }
     }
@@ -170,7 +174,7 @@ export default function Home() {
     };
 
     const handleShowLess = () => {
-        setPageSize(10); 
+        setPageSize(10);
     };
 
     const fetchJobs = async () => {
@@ -183,7 +187,7 @@ export default function Home() {
 
     useEffect(() => {
         fetchJobs();
-    }, [search, status, page, sort, tags,pageSize]);
+    }, [search, status, page, sort, tags, pageSize]);
 
 
 
@@ -195,7 +199,7 @@ export default function Home() {
             {editJob && (
                 <EditJobModal job={editJob} closeModal={() => { { setEditJob(), fetchJobs() } }} />
             )}
-            
+
             <div className="bg-white shadow-sm border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-6">
@@ -203,7 +207,7 @@ export default function Home() {
                             <h1 className="text-3xl font-bold text-gray-900">Job Management</h1>
                             <p className="mt-1 text-sm text-gray-500">Manage and organize your job postings</p>
                         </div>
-                        <button 
+                        <button
                             onClick={() => setShowCreateModal(true)}
                             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                         >
@@ -229,8 +233,8 @@ export default function Home() {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                            <select 
-                                value={status} 
+                            <select
+                                value={status}
                                 onChange={(e) => { setStatus(e.target.value); setPage(1) }}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                             >
@@ -242,8 +246,8 @@ export default function Home() {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
-                            <select 
-                                value={sort} 
+                            <select
+                                value={sort}
                                 onChange={(e) => { setSort(e.target.value); setPage(1) }}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                             >
@@ -266,7 +270,7 @@ export default function Home() {
                                     onChange={(e) => setTagInput(e.target.value)}
                                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
-                                <button 
+                                <button
                                     onClick={handleAddTag}
                                     className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
                                 >
@@ -283,7 +287,7 @@ export default function Home() {
                                 {tags.map((tag, i) => (
                                     <span key={i} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                                         {tag}
-                                        <button 
+                                        <button
                                             onClick={() => handleRemoveTag(tag)}
                                             className="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full text-blue-400 hover:bg-blue-200 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         >
@@ -327,15 +331,15 @@ export default function Home() {
                 </div>
 
                 <div className="flex justify-center gap-3 mt-6">
-                    <button 
-                        onClick={handleShowMore} 
+                    <button
+                        onClick={handleShowMore}
                         disabled={pageSize >= totalJobs}
                         className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                     >
                         Show More
                     </button>
-                    <button 
-                        onClick={handleShowLess} 
+                    <button
+                        onClick={handleShowLess}
                         disabled={pageSize <= 10}
                         className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                     >

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { toast } from "react-toastify";
 
 
 export default function EditJobModal({ job, closeModal }) {
@@ -25,12 +26,12 @@ export default function EditJobModal({ job, closeModal }) {
 
     const handleJobSubmit = async () => {
         if (!jobData.title.trim()) {
-            alert("Job title is required.");
+            toast.warn("Job title is required.");
             return;
         }
 
         if (!jobData.tags || jobData.tags.length === 0) {
-            alert("At least one tag is required.");
+            toast.warn("At least one tag is required.");
             return;
         }
 
@@ -42,10 +43,11 @@ export default function EditJobModal({ job, closeModal }) {
             });
             res = await res.json();
             console.log("Job updated", res);
+            toast.success("Job updated")
             closeModal();
         } catch (err) {
             console.error("Failed to update job", err);
-            alert("Something went wrong while updating.");
+            toast.error("Something went wrong while updating.");
         }
 
 

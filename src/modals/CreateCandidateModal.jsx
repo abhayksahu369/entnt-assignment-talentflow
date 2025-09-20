@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 
 export default function CreateCandidateModal({ closeModal }) {
@@ -26,13 +27,13 @@ export default function CreateCandidateModal({ closeModal }) {
 
   const handleCandidateSubmit = async () => {
     if (!candidateData.name.trim()) {
-      alert("Candidate name is required.");
+      toast.warn("Candidate name is required.");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!candidateData.email.trim() || !emailRegex.test(candidateData.email)) {
-      alert("Please enter a valid email address.");
+      toast.warn("Please enter a valid email address.");
       return;
     }
 
@@ -44,11 +45,11 @@ export default function CreateCandidateModal({ closeModal }) {
       });
       res = await res.json();
       console.log(res);
-      console.log("Candidate added successfully");
+      toast.success("Candidate added successfully");
       closeModal();
     } catch (err) {
       console.error("Failed to add candidate", err);
-      alert("Something went wrong while adding the candidate.");
+      toast.error("Something went wrong while adding the candidate.");
     }
   };
 

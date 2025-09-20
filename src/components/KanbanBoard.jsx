@@ -4,6 +4,7 @@ import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-
 import { CSS } from "@dnd-kit/utilities";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 function CandidateCard({ candidate }) {
   const {
@@ -167,7 +168,7 @@ export default function KanbanBoard({ candidates, setCandidates,fetchCandidate }
 
     const activeCandidate = candidates.find(c => c.id === candidateId);
     if (!activeCandidate) return;
-
+     const candidateName=activeCandidate.name;
     const activeStage = activeCandidate.stage;
     
     const overCandidate = candidates.find(c => c.id === overId);
@@ -211,6 +212,7 @@ export default function KanbanBoard({ candidates, setCandidates,fetchCandidate }
       });
       const result = await res.json();
       console.log(result);
+      toast.info(`${candidateName} progressed to ${overStage} stage.`);
       fetchCandidate()
     } catch (err) {
       console.error("Failed to update, rollback", err);
