@@ -172,6 +172,8 @@ export default function KanbanBoard({ candidates, setCandidates, fetchCandidate 
 
     const overCandidate = candidates.find(c => c.id === overId);
     const overStage = overCandidate ? overCandidate.stage : overId;
+
+    if (activeStage === overStage && candidateId === overId) return;
     const previousCandidates = [...candidates];
 
     setCandidates((prev) => {
@@ -218,7 +220,7 @@ export default function KanbanBoard({ candidates, setCandidates, fetchCandidate 
       const result = await res.json();
       console.log(result);
       toast.info(`${candidateName} progressed to ${overStage} stage.`);
-      fetchCandidate();
+      if(fetchCandidate)fetchCandidate();
     } catch (err) {
       console.error("Failed to update, rolling back", err);
       toast.error(`Failed to move ${candidateName}. Changes reverted.`);

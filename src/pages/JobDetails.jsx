@@ -108,7 +108,7 @@ export default function JobDetails() {
                         </p>
                     </div>
                     <div className="p-6">
-                        <CandidatesView allCandidates={candidates} />
+                        <CandidatesView allCandidates={candidates} jobId={id} />
                     </div>
                 </div>
             </div>

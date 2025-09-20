@@ -29,28 +29,7 @@ export default function CandidateDetails() {
     }
   };
 
-  const handleStageChange = async (candidateId, newStage) => {
-    try {
-      const res = await fetch(`/api/candidates/${candidateId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stage: newStage }),
-      });
-      const result = await res.json();
-      console.log("Stage updated:", result);
-
-      setCandidate(prev => prev.map(c =>
-        c.id === candidateId
-          ? { ...c, stage: newStage }
-          : c
-      ));
-
-      fetchCandidate();
-    } catch (err) {
-      console.error("Failed to update stage:", err);
-      toast.error("Failed to update stage:")
-    }
-  }
+  
 
   useEffect(() => {
     if (id) {
@@ -155,7 +134,7 @@ export default function CandidateDetails() {
                 <p className="mt-1 text-sm text-gray-500">Drag and drop to move between stages</p>
               </div>
               <div className="p-6">
-                <KanbanBoard candidates={candidate} setCandidates={setCandidate} onStageChange={handleStageChange} fetchCandidate={fetchCandidate} />
+                <KanbanBoard candidates={candidate} setCandidates={setCandidate}  fetchCandidate={fetchCandidate} />
               </div>
             </div>
           </div>

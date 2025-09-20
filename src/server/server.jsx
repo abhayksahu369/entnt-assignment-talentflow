@@ -692,6 +692,11 @@ export function makeServer({ environment = "development" } = {}) {
                 if (stage) {
                     candidates = candidates.filter((candidate) => candidate.stage === stage)
                 }
+                const jobId=request.queryParams.jobId
+                console.log(jobId)
+                if (jobId) {
+                    candidates = candidates.filter((candidate) => candidate.jobId === jobId)
+                }
                 return { candidates, total: candidates.length };
             });
 
