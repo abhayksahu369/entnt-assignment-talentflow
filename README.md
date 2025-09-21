@@ -42,6 +42,9 @@ To get a local copy up and running, follow these simple steps.
 
 The application will be available at the URL provided in your terminal (usually `http://localhost:5173`).
 
+You can view a live version of the application here:
+[Live Link to the Application](https://talentflowabhaykumarsahu.netlify.app/)
+
 -----
 
 ## Architecture
