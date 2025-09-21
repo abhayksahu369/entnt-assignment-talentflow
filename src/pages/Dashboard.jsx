@@ -34,10 +34,10 @@ export default function HRDashboard() {
   }, []);
 
   if (loading) {
-          return (
-              <Loader/>
-          );
-    }
+    return (
+      <Loader />
+    );
+  }
 
   const candidateStages = ["applied", "screen", "tech", "offer", "hired", "rejected"];
   const stageData = candidateStages.map(stage => ({
@@ -95,37 +95,40 @@ export default function HRDashboard() {
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Jobs & Candidates</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Job Title</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                {candidateStages.map(stage => (
-                  <th key={stage} className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                    {stage.charAt(0).toUpperCase() + stage.slice(1)}
-                  </th>
-                ))}
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Candidates</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {jobs.map(job => {
-                const jobCandidates = candidates.filter(c => c.jobId === job.id);
-                return (
-                  <tr key={job.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2">{job.title}</td>
-                    <td className="px-4 py-2">{job.status}</td>
-                    {candidateStages.map(stage => (
-                      <td key={stage} className="px-4 py-2">
-                        {jobCandidates.filter(c => c.stage === stage).length}
-                      </td>
-                    ))}
-                    <td className="px-4 py-2">{jobCandidates.length}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="max-h-[400px] overflow-y-auto border border-gray-200 rounded">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50 sticky top-0 z-10">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Job Title</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  {candidateStages.map(stage => (
+                    <th key={stage} className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      {stage.charAt(0).toUpperCase() + stage.slice(1)}
+                    </th>
+                  ))}
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Candidates</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {jobs.map(job => {
+                  const jobCandidates = candidates.filter(c => c.jobId === job.id);
+                  return (
+                    <tr key={job.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-2">{job.title}</td>
+                      <td className="px-4 py-2">{job.status}</td>
+                      {candidateStages.map(stage => (
+                        <td key={stage} className="px-4 py-2">
+                          {jobCandidates.filter(c => c.stage === stage).length}
+                        </td>
+                      ))}
+                      <td className="px-4 py-2">{jobCandidates.length}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
