@@ -167,6 +167,11 @@ export default function AssessmentPreview({ assessmentData, jobId }) {
                                                         >
                                                             Click to upload file or drag and drop
                                                         </label>
+                                                        {answers[q.id]?.name && (
+                                                            <p className="mt-2 text-sm text-green-600">
+                                                                ✅ {answers[q.id]?.name} is attached
+                                                            </p>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
