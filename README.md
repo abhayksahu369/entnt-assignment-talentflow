@@ -124,7 +124,7 @@ entnt-assignment-talentflow/
   * **Reorder via drag-and-drop:** Drag-and-drop reordering is implemented in `Home.jsx` using `DndContext` and `SortableContext` from `dnd-kit`. The implementation includes optimistic updates, where the UI is updated immediately, and a rollback mechanism is in place to revert changes if the mock API call fails.
 
 
-![rollback](public/markdownimages/rollback.gif )    
+![rollback](public/markdownimages/rollbackjob.gif )    
 
 ### 2\. Candidates
 
@@ -152,6 +152,6 @@ entnt-assignment-talentflow/
   
   * **Form Validation and Conditional Questions:** The preview component handles validation rules for required questions, numeric ranges, and max lengths. It also supports conditional logic, displaying questions only when a specific answer is selected for a preceding question.
 #### Conditional Question Flow (Follow-up Triggered by "No")
-![condition](public/markdownimages/condition.gif )
+![condition](public/markdownimages/conditionanswer.gif )
 
 -----
