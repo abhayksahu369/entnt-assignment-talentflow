@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import AllAssessmentPage from './pages/AllAssessmentPage.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import NotFoundPage from './pages/NoPageFound.jsx';
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
             <Route path='/allassessments' element={<AllAssessmentPage />} />
             <Route path='/assessmentbuilder/:jobId' element={<AssessmentBuilder />} />
             <Route path='/assessmentpreview/:jobId' element={<AssessmentPreviewPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
       </BrowserRouter>
