@@ -246,7 +246,7 @@ export function makeServer({ environment = "development" } = {}) {
                 name: "Amit Sharma",
                 email: "amit.sharma@example.com",
                 stage: "hired",
-                jobId: 1,
+                jobId: "1",
                 timeline: [
                     { stage: "applied", date: "2025-09-01T09:00:00.000Z" },
                     { stage: "screen", date: "2025-09-02T09:00:00.000Z" },
@@ -261,7 +261,7 @@ export function makeServer({ environment = "development" } = {}) {
                 name: "Priya Reddy",
                 email: "priya.reddy@example.com",
                 stage: "rejected",
-                jobId: 1,
+                jobId: "1",
                 timeline: [
                     { stage: "applied", date: "2025-09-01T10:00:00.000Z" },
                     { stage: "screen", date: "2025-09-02T10:00:00.000Z" },
@@ -276,7 +276,7 @@ export function makeServer({ environment = "development" } = {}) {
                 name: "Rohit Verma",
                 email: "rohit.verma@example.com",
                 stage: "hired",
-                jobId: 1,
+                jobId: "1",
                 timeline: [
                     { stage: "applied", date: "2025-09-01T11:00:00.000Z" },
                     { stage: "screen", date: "2025-09-02T11:00:00.000Z" },
