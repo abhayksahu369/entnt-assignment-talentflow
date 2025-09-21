@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
 
 export default function AllAssessmentPage() {
   const [assessments, setAssessments] = useState([]);
@@ -43,6 +44,12 @@ export default function AllAssessmentPage() {
     fetchJobs();
   }, []);
 
+   if (loading) {
+          return (
+              <Loader/>
+          );
+      }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -80,9 +87,7 @@ export default function AllAssessmentPage() {
         </div>
       </div>
 
-      {loading ? (
-        <p>Loading assessments...</p>
-      ) : assessments.length === 0 ? (
+      {assessments.length === 0 ? (
         <p className="text-gray-500">No assessments found yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

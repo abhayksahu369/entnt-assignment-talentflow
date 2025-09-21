@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import CreateCandidateModal from "../modals/CreateCandidateModal";
 import CandidatesList from "../components/CandidatesList";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
 
 export default function CandidatesPage() {
   const [allCandidates, setAllCandidates] = useState([]);
@@ -9,6 +10,7 @@ export default function CandidatesPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [query, setQuery] = useState("");
   const [stage, setStage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchCandidates = async () => {
     try {
@@ -20,6 +22,8 @@ export default function CandidatesPage() {
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch candidates. Please try again.");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -33,6 +37,12 @@ export default function CandidatesPage() {
     if (query) filtered = filtered.filter((c) => c.name.toLowerCase().includes(query.toLowerCase()));
     setCandidates(filtered);
   }, [stage, query, allCandidates]);
+  
+   if (loading) {
+          return (
+              <Loader/>
+          );
+    }
 
   return (
     <div className="space-y-6 bg-gray-50 min-h-screen">

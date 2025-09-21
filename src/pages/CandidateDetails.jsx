@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import KanbanBoard from "../components/KanbanBoard";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
 
 
 
@@ -9,6 +10,7 @@ export default function CandidateDetails() {
   const [candidate, setCandidate] = useState([]);
   const [notes, setNotes] = useState([]);
   const [showNotes, setShowNotes] = useState(false)
+  const [loading, setLoading] = useState(true);
   const { id } = useParams()
 
   const fetchCandidate = async () => {
@@ -26,6 +28,8 @@ export default function CandidateDetails() {
     } catch (error) {
       console.error("Failed to fetch candidate:", error);
       toast.error("Failed to fetch candidate. Please try again.");
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -37,6 +41,11 @@ export default function CandidateDetails() {
     }
   }, [id])
 
+  if (loading) {
+          return (
+              <Loader/>
+          );
+    } 
 
 
   return (

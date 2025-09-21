@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import AssessmentPreview from "../components/AssessmentPreview";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
 
 
 export default function AssessmentPreviewPage() {
@@ -30,12 +31,7 @@ export default function AssessmentPreviewPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading...</p>
-                </div>
-            </div>
+           <Loader/>
         );
     }
 

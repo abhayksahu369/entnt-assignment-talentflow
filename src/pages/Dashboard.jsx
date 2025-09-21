@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import Loader from "../components/Loader";
 
 export default function HRDashboard() {
   const [jobs, setJobs] = useState([]);
@@ -31,6 +32,12 @@ export default function HRDashboard() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  if (loading) {
+          return (
+              <Loader/>
+          );
+    }
 
   const candidateStages = ["applied", "screen", "tech", "offer", "hired", "rejected"];
   const stageData = candidateStages.map(stage => ({

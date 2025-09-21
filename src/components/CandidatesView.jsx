@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import KanbanBoard from "../components/KanbanBoard";
 import CandidatesList from "../components/CandidatesList";
+import Loader from "./Loader";
 
 export default function CandidatesView({ allCandidates,jobId }) {
     console.log(jobId)
@@ -8,8 +9,10 @@ export default function CandidatesView({ allCandidates,jobId }) {
     const [query, setQuery] = useState("");
     const [stage, setStage] = useState("");
     const [view, setView] = useState("list");
+    const [loading, setLoading] = useState(true);
 
     const fetchCandidates = async () => {
+        setLoading(true)
         try {
             const res = await fetch(`/api/candidates?stage=${stage}&jobId=${jobId}`);
             if (!res.ok) throw new Error("Server error");
@@ -18,6 +21,8 @@ export default function CandidatesView({ allCandidates,jobId }) {
         } catch (err) {
             console.error(err);
             toast.error("Failed to fetch candidates");
+        }finally{
+             setLoading(false);
         }
     };
     useEffect(()=>{
@@ -33,6 +38,12 @@ export default function CandidatesView({ allCandidates,jobId }) {
         }
         setCandidates(filtered);
     }, [ query, allCandidates]);
+
+    if (loading) {
+            return (
+                <Loader/>
+            );
+        }
 
     return (
         <div className="space-y-6">

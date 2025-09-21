@@ -14,6 +14,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
 
 
 function JobItem({ job, handleJobStatus, setEditJob }) {
@@ -90,6 +91,7 @@ export default function Home() {
     const [tagInput, setTagInput] = useState("");
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editJob, setEditJob] = useState();
+    const [loading, setLoading] = useState(true);
 
 
     const handleDragEnd = async ({ active, over }) => {
@@ -207,6 +209,8 @@ export default function Home() {
         } catch (error) {
             console.error("Error fetching jobs:", error);
             toast.error("Error fetching jobs. Please try again.");
+        }finally{
+             setLoading(false);
         }
     }
 
@@ -214,7 +218,12 @@ export default function Home() {
     useEffect(() => {
         fetchJobs();
     }, [search, status, page, sort, tags, pageSize]);
-
+    
+    if (loading) {
+        return (
+            <Loader/>
+        );
+    }
 
 
     return (

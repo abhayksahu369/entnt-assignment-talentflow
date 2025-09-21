@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CandidatesView from "../components/CandidatesView";
+import Loader from "../components/Loader";
 
 export default function JobDetails() {
   const { id } = useParams();
   const [job, setJob] = useState({});
   const [candidates, setCandidates] = useState([]);
   const [assessment, setAssessment] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
@@ -38,8 +40,16 @@ export default function JobDetails() {
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch job. Please try again.");
+    }finally{
+      setLoading(false)
     }
   };
+
+  if (loading) {
+          return (
+              <Loader/>
+          );
+      }
 
   return (
     <div className="min-h-screen bg-gray-50">
