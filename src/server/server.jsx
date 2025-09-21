@@ -684,10 +684,6 @@ export function makeServer({ environment = "development" } = {}) {
 
 
             this.get("/jobs/:id", (schema, request) => {
-                // Inject error 5–10% of the time
-                if (Math.random() < 0.05) {
-                    return new Response(500, {}, { error: "Server error: failed to create job" });
-                }
                 const job = schema.jobs.find(request.params.id);
                 const candidates = schema.candidates.where({ jobId: request.params.id })
                 return { job, candidates: candidates.models }
@@ -729,10 +725,6 @@ export function makeServer({ environment = "development" } = {}) {
             });
 
             this.get("/candidates", (schema, request) => {
-                // Inject error 5–10% of the time
-                if (Math.random() < 0.05) {
-                    return new Response(500, {}, { error: "Server error" });
-                }
                 let candidates = schema.candidates.all().models;
                 console.log(candidates)
                 const stage = request.queryParams.stage
@@ -776,10 +768,6 @@ export function makeServer({ environment = "development" } = {}) {
             });
 
             this.get("/candidates/:id/timeline", (schema, request) => {
-                // Inject error 5–10% of the time
-                if (Math.random() < 0.05) {
-                    return new Response(500, {}, { error: "Server error" });
-                }
                 const id = request.params.id;
                 const candidate = schema.candidates.find(id);
                 console.log(candidate);
@@ -787,10 +775,6 @@ export function makeServer({ environment = "development" } = {}) {
             });
 
             this.get("/assessments", (schema, request) => {
-                // Inject error 5–10% of the time
-                if (Math.random() < 0.05) {
-                    return new Response(500, {}, { error: "Server error" });
-                }
                 let assessments = schema.assessments.all().models;
                 return { assessments, total: assessments.length };
             });
@@ -798,26 +782,10 @@ export function makeServer({ environment = "development" } = {}) {
 
 
             this.get("/assessments/:jobId", (schema, request) => {
-                // Inject error 5–10% of the time
-                if (Math.random() < 0.05) {
-                    return new Response(500, {}, { error: "Server error" });
-                }
                 let jobId = request.params.jobId;
                 return schema.assessments.findBy({ jobId });
             });
 
-            this.post("/assessments", (schema, request) => {
-                // Inject error 5–10% of the time
-                if (Math.random() < 0.05) {
-                    return new Response(500, {}, { error: "Server error" });
-                }
-                let attrs = JSON.parse(request.requestBody);
-
-                return schema.assessments.create({
-                    id: faker.string.uuid(),
-                    ...attrs,
-                });
-            });
 
 
             this.put("/assessments/:jobId", (schema, request) => {
