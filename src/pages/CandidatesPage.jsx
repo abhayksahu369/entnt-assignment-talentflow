@@ -34,7 +34,7 @@ export default function CandidatesPage() {
   useEffect(() => {
     let filtered = allCandidates;
     if (stage) filtered = filtered.filter((c) => c.stage === stage);
-    if (query) filtered = filtered.filter((c) => c.name.toLowerCase().includes(query.toLowerCase()));
+    if (query) filtered = filtered.filter((c) => c.name.toLowerCase().includes(query.toLowerCase())||c.email.toLowerCase().includes(query.toLowerCase()));
     setCandidates(filtered);
   }, [stage, query, allCandidates]);
   
