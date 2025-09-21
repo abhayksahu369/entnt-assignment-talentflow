@@ -4,10 +4,17 @@ import './index.css'
 import App from './App.jsx'
 import { makeServer } from './server/server.jsx';
 
-makeServer();
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+
+(async () => {
+  try {
+    await makeServer();
+    createRoot(document.getElementById('root')).render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+  } catch (error) {
+    console.error("Failed to initialize the mock server:", error);
+  }
+})();
