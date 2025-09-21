@@ -15,7 +15,7 @@ export default function AssessmentPreviewPage() {
             let res = await fetch(`/api/assessments/${jobId}`);
             res = await res.json();
             console.log(res);
-            setAssessment(res.assessment);
+            setAssessment(res?.assessment);
         } catch (error) {
             console.error("Error fetching assessment:", error);
             toast.error("Error fetching assessment:")

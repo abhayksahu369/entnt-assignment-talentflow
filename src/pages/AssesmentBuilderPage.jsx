@@ -3,6 +3,7 @@ import { faker } from "@faker-js/faker";
 import AssessmentPreview from "../components/AssessmentPreview";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
 
 
 export default function AssessmentBuilder() {
@@ -17,7 +18,25 @@ export default function AssessmentBuilder() {
         const saved = localStorage.getItem(`${jobId}_assessment_title`);
         return saved || "";
     });
-    console.log(sections);
+    const [loading, setLoading] = useState(true);
+    const [job, setJob] = useState({});
+
+    useEffect(() => {
+        const fetchJob = async () => {
+            try {
+                const res = await fetch(`/api/jobs/${jobId}`);
+                if (!res.ok) throw new Error(`Server responded with status ${res.status}`);
+                const data = await res.json();
+                setJob(data.job || {});
+            } catch (error) {
+                console.error("Failed to fetch job:", error);
+            }
+        };
+
+        if (jobId) fetchJob();
+    }, [jobId]);
+
+
 
     useEffect(() => {
         localStorage.setItem(`${jobId}_assessment_sections`, JSON.stringify(sections));
@@ -28,20 +47,46 @@ export default function AssessmentBuilder() {
         localStorage.setItem(`${jobId}_assessment_title`, assessmentTitle);
     }, [assessmentTitle]);
 
+    useEffect(() => {
+        const fetchExistingAssessment = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch(`/api/assessments/${jobId}`);
+                if (!res.ok) throw new Error(`Server responded with status ${res.status}`);
+                const data = await res.json();
+                console.log(data)
+                if (data.assessment) {
+                    setAssessmentTitle(data.assessment.title || "");
+                    setSections(data.assessment.sections || []);
+                    if (!toast.isActive("existing-assessment")) toast.info("Assessment already exists. You can edit it.", { toastId: "existing-assessment" });
+                }
+            } catch (error) {
+                console.error("Failed to fetch assessment:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (jobId) fetchExistingAssessment();
+    }, [jobId]);
+
+
+
+
     const handleCreateAssessment = async () => {
         if (!assessmentTitle.trim()) {
             toast.warn("Please enter an assessment title");
             return;
         }
 
-        if (sections.length===0) {
+        if (sections.length === 0) {
             toast.warn("Please add sections and questions");
             return;
         }
 
         try {
-            let res = await fetch("/api/assessments", {
-                method: "POST",
+            const res = await fetch(`/api/assessments/${jobId}`, {
+                method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     title: assessmentTitle,
@@ -55,19 +100,15 @@ export default function AssessmentBuilder() {
             }
 
             const data = await res.json();
-            console.log(data);
-            localStorage.removeItem(`${jobId}_assessment_sections`);
-            localStorage.removeItem(`${jobId}_assessment_title`);
-            setAssessmentTitle("");
-            setSections([]);
-
-            toast.success("Assessment created successfully");
-            navigate(`/job/${jobId}`);
+            console.log("Assessment saved:", data);
+            toast.success("Assessment saved successfully");
+            navigate(`/allassessments`);
         } catch (error) {
-            console.error("Failed to create assessment:", error);
-            toast.error("Failed to create assessment. Please try again.");
+            console.error("Failed to save assessment:", error);
+            toast.error("Failed to save assessment. Please try again.");
         }
-    }
+    };
+
 
     const addSection = () => {
         setSections((prev) => [
@@ -196,6 +237,9 @@ export default function AssessmentBuilder() {
         );
     };
 
+
+    if (loading) return <Loader />;
+
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="bg-white shadow-sm border-b border-gray-200">
@@ -203,29 +247,24 @@ export default function AssessmentBuilder() {
                     <div className="py-6">
                         <div className="flex justify-between items-center">
                             <div className="flex-1">
-                                <h1 className="text-3xl font-bold text-gray-900">Assessment Builder</h1>
-                                <p className="mt-1 text-sm text-gray-500">Create and customize assessment forms for candidates</p>
-                                <div className="mt-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Assessment Title</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter assessment title..."
-                                        value={assessmentTitle}
-                                        onChange={(e) => setAssessmentTitle(e.target.value)}
-                                        className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    />
+                                <div className="flex-1">
+                                    {job.title && (
+                                        <p className="text-sm text-gray-500 mb-1">
+                                            Creating assessment for: <span className="font-medium text-gray-900">{job.title}</span>
+                                        </p>
+                                    )}
+                                    <h1 className="text-3xl font-bold text-gray-900">Assessment Builder</h1>
+                                    <div className="mt-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Assessment Title</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter assessment title..."
+                                            value={assessmentTitle}
+                                            onChange={(e) => setAssessmentTitle(e.target.value)}
+                                            className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="ml-6">
-                                <button
-                                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
-                                    onClick={() => { handleCreateAssessment() }}
-                                >
-                                    <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Create Assessment
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -490,8 +529,23 @@ export default function AssessmentBuilder() {
                             <AssessmentPreview assessmentData={sections} />
                         </div>
                     </div>
+                    
                 </div>
+                <div className="mt-8 pt-6 border-t border-gray-200 flex justify-center">
+    <button
+        className="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+        onClick={() => handleCreateAssessment()}
+    >
+        <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+        Create Assessment
+    </button>
+</div>
+
+                
             </div>
+            
         </div>
     );
 }

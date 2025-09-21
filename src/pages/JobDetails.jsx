@@ -23,7 +23,7 @@ export default function JobDetails() {
       let res = await fetch(`/api/assessments/${id}`);
       if (!res.ok) throw new Error(`Server responded with status ${res.status}`);
       const data = await res.json();
-      setAssessment(data.assessment);
+      setAssessment(data?.assessment);
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch assessment. Please try again.");
