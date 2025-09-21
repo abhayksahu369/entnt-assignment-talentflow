@@ -190,9 +190,9 @@ The application's navigation is managed using **react-router-dom**, defining a c
   * **Kanban Board:** The `KanbanBoard.jsx` component allows dragging and dropping candidates between different hiring stages (`applied`, `screen`, `tech`, `offer`, `hired`, `rejected`). This is particularly useful on the **Job Detail page**, where the Kanban board makes it easy to visualize and manage candidates for a specific job, and the board can also be filtered by stage. It is also used on the **Candidate Detail page** to manage an individual candidate’s pipeline across different stages. The component handles the API call to update the candidate's stage with an optimistic UI update and a rollback on failure.
 
 #### Kanban Board in Job Detail Page
-![kanban view](public/markdownimages/kanbanjobdetails.png )  
+![kanban view](public/markdownimages/kanban2.gif )  
 #### Kanban Board in Candidate Detail Page
-![kanban view](public/markdownimages/kanbancandidatedetails.png)  
+![kanban view](public/markdownimages/kanban.gif)  
 
   * **Notes with @mentions:** On the candidate detail page, a notes section allows adding notes. When typing, suggestions for team members appear when you type `@`. The notes are stored and rendered with the mentions highlighted, but this is a purely local implementation.
 
